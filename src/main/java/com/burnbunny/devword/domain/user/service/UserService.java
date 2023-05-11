@@ -35,4 +35,8 @@ public class UserService {
         newUser.passwordEncode(passwordEncoder);
         userRepository.save(newUser);
     }
+
+    public boolean isEmailAvailable(String email) {
+        return !userRepository.existsByEmail(email);
+    }
 }
