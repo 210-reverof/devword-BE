@@ -6,11 +6,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class UserSignUpDto {
+    // TODO: 2023/05/13 pwcheck 추가하기
 
     private String email;
     private String password;
     private String nickname;
-    private int age;
-    private String city;
 
 }

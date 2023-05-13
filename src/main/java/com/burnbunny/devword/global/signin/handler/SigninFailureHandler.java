@@ -21,5 +21,7 @@ public class SigninFailureHandler extends SimpleUrlAuthenticationFailureHandler 
         response.setContentType("text/plain;charset=UTF-8");
         response.getWriter().write("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
         log.info("로그인 실패: {}", exception.getMessage());
+
+        // TODO: 2023/05/13 응답 수정하기
     }
 }

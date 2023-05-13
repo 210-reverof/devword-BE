@@ -24,6 +24,8 @@ public class SigninSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info("로그인 성공.");
         log.info("로그인 데이터: ");
         log.info("email: {}", email);
+
+        // TODO: 2023/05/13 응답 수정하기
     }
 
     private String extractUserEmail(Authentication authentication) {
