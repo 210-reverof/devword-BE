@@ -11,7 +11,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-
 import java.util.Date;
 import java.util.Optional;
 
@@ -108,7 +107,7 @@ public class JwtService {
             new Exception("해당 이메일과 일치하는 회원이 없습니다.");
             return;
         }
-        
+
         user.updateRefreshToken(refreshToken);
         userRepository.saveAndFlush(user);
     }
