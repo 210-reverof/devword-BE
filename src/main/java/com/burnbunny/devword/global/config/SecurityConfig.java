@@ -1,5 +1,8 @@
 package com.burnbunny.devword.global.config;
 
+import com.burnbunny.devword.domain.user.repository.UserRepository;
+import com.burnbunny.devword.global.jwt.filter.JwtAuthenticationProcessingFilter;
+import com.burnbunny.devword.global.jwt.service.JwtService;
 import com.burnbunny.devword.global.signin.filter.JsonUsernamePasswordAuthenticationFilter;
 import com.burnbunny.devword.global.signin.handler.SigninFailureHandler;
 import com.burnbunny.devword.global.signin.handler.SigninSuccessHandler;
@@ -30,6 +33,10 @@ public class SecurityConfig {
     private final SigninSuccessHandler signinSuccessHandler;
     private final SigninFailureHandler signinFailureHandler;
 
+    private final JwtService jwtService;
+    private final UserRepository userRepository;
+
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -47,11 +54,17 @@ public class SecurityConfig {
                 .requestMatchers("/user/sign-up", "user/check/**").permitAll()
                 .anyRequest().authenticated();
 
-        http.addFilterAfter(jsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class);
+        http.addFilterAfter(jwtAuthenticationProcessingFilter(), LogoutFilter.class);
+        http.addFilterAfter(jsonUsernamePasswordAuthenticationFilter(), JwtAuthenticationProcessingFilter.class);
 
         return http.build();
     }
 
+    @Bean
+    public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter() {
+        return new JwtAuthenticationProcessingFilter(jwtService, userRepository);
+
+    }
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
