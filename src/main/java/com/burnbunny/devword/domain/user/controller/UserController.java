@@ -1,5 +1,6 @@
 package com.burnbunny.devword.domain.user.controller;
 
+import com.burnbunny.devword.domain.user.dto.UserResponseDto;
 import com.burnbunny.devword.domain.user.dto.UserSignUpDto;
 import com.burnbunny.devword.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,11 @@ public class UserController {
     }
 
     @GetMapping("/check/{email}")
-    public boolean checkEmail(@PathVariable String email) {
-        return userService.isEmailAvailable(email);
+    public UserResponseDto checkEmail(@PathVariable String email) {
+        boolean emailAvailable = userService.isEmailAvailable(email);
+        String resMessage = emailAvailable ? "사용 가능한 이메일" : "사용 불가능한 이메일";
+
+        return new UserResponseDto(200, resMessage, emailAvailable);
     }
 
     @GetMapping("/token-test")
