@@ -12,7 +12,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 @RequiredArgsConstructor
-@EnableRedisRepositories(basePackages = "com.burnbunny.devword.global.jwt.refreshtoken.repository")
+@EnableRedisRepositories(basePackages = "com.burnbunny.devword.global.jwt.repository")
 public class RedisConfig {
 
     @Value("${spring.cache.redis.host}")
