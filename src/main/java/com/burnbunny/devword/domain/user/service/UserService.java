@@ -16,7 +16,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public void signUp(UserSignUpDto userSignUpDto) throws Exception {
+    public Long signUp(UserSignUpDto userSignUpDto) throws Exception {
         if (userRepository.existsByEmail(userSignUpDto.getEmail())) {
             throw new Exception("이미 존재하는 이메일입니다.");
         }
@@ -25,7 +25,9 @@ public class UserService {
             throw new Exception("이미 존재하는 닉네임입니다.");
         }
 
-        // TODO: 2023/05/13 pwcheck과 비교 추가, 응답 수정하기
+        if (!userSignUpDto.getPassword().equals(userSignUpDto.getPasswordCheck())) {
+            throw new Exception("비밀번호 확인화 일치하지 않습니다.");
+        }
 
         User newUser = User.builder()
                 .email(userSignUpDto.getEmail())
@@ -35,7 +37,9 @@ public class UserService {
                 .build();
 
         newUser.passwordEncode(passwordEncoder);
-        userRepository.save(newUser);
+        User savedUser = userRepository.save(newUser);
+
+        return savedUser.getId();
     }
 
     public boolean isEmailAvailable(String email) {

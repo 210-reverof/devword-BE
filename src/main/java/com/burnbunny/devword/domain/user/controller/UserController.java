@@ -13,9 +13,11 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/sign-up")
-    public String signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
-        userService.signUp(userSignUpDto);
-        return "회원가입 성공";
+    public UserResponseDto signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
+        Long userId = userService.signUp(userSignUpDto);
+        String resMessage = (userId!=null) ? "회원 가입 완료" : "에러 메시지";
+
+        return new UserResponseDto(200, resMessage, userId);
     }
 
     @GetMapping("/check/{email}")
