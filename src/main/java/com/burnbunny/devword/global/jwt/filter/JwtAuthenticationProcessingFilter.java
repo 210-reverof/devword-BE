@@ -5,24 +5,19 @@ import com.burnbunny.devword.domain.user.repository.UserRepository;
 import com.burnbunny.devword.global.jwt.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.service.spi.ServiceException;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.net.http.HttpRequest;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -59,7 +54,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
             return;
         }
 
-        User user = userRepository.findByRefreshToken(refreshToken).orElseThrow(() -> new ServiceException("잘못된 refresh token입니다."));
+        User user = userRepository.findByRefreshToken_Token(refreshToken).orElseThrow(() -> new ServiceException("잘못된 refresh token입니다."));
 
         String reissuedRefreshToken = reissueRefreshToken(user);
         String reissuedAccessToken = jwtService.createAccessToken(user.getEmail());
@@ -69,6 +64,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     private String reissueRefreshToken(User user) {
         String reissuedRefreshToken = jwtService.createRefreshToken();
         user.updateRefreshToken(reissuedRefreshToken);
+        userRepository.saveAndFlush(user);
         return reissuedRefreshToken;
     }
 
