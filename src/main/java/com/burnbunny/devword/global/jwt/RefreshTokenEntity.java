@@ -1,4 +1,4 @@
-package com.burnbunny.devword.global.jwt.refreshtoken;
+package com.burnbunny.devword.global.jwt;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;

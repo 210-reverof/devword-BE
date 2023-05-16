@@ -1,6 +1,6 @@
-package com.burnbunny.devword.global.jwt.refreshtoken.repository;
+package com.burnbunny.devword.global.jwt.repository;
 
-import com.burnbunny.devword.global.jwt.refreshtoken.RefreshTokenEntity;
+import com.burnbunny.devword.global.jwt.RefreshTokenEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
