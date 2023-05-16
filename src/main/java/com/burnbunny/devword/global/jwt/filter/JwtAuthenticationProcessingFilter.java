@@ -54,17 +54,17 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
             return;
         }
 
-        User user = userRepository.findByRefreshToken_Token(refreshToken).orElseThrow(() -> new ServiceException("잘못된 refresh token입니다."));
+        User user = jwtService.findUserByRefreshToken(refreshToken).orElseThrow(() -> new ServiceException("잘못된 refresh token입니다."));
+        String email = user.getEmail();
 
-        String reissuedRefreshToken = reissueRefreshToken(user);
-        String reissuedAccessToken = jwtService.createAccessToken(user.getEmail());
+        String reissuedRefreshToken = reissueRefreshToken(email);
+        String reissuedAccessToken = jwtService.createAccessToken(email);
         jwtService.sendAccessAndRefreshTokenInResponse(response, reissuedAccessToken, reissuedRefreshToken);
     }
 
-    private String reissueRefreshToken(User user) {
+    private String reissueRefreshToken(String  email) {
         String reissuedRefreshToken = jwtService.createRefreshToken();
-        user.updateRefreshToken(reissuedRefreshToken);
-        userRepository.saveAndFlush(user);
+        jwtService.updateRefreshToken(email, reissuedRefreshToken);
         return reissuedRefreshToken;
     }
 
@@ -73,7 +73,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
         jwtService.extractAccessTokenFromRequest(request)
                 .filter(jwtService::isTokenValid)
-                .flatMap(jwtService::extractEmailFromToken)
+                .flatMap(jwtService::extractEmailFromAccessToken)
                 .flatMap(userRepository::findByEmail)
                 .ifPresent(this::saveAuthentication);
 

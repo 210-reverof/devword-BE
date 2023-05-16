@@ -1,6 +1,5 @@
 package com.burnbunny.devword.domain.user;
 
-import com.burnbunny.devword.global.jwt.RefreshTokenEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,9 +23,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private RefreshTokenEntity refreshToken;
-
     public void authorizeUser() {
         this.role = Role.USER;
     }
@@ -37,13 +33,5 @@ public class User {
 
     public void updatePassword(PasswordEncoder passwordEncoder, String newPassword) {
         this.password = passwordEncoder.encode(newPassword);
-    }
-
-    public void updateRefreshToken(String reissuedRefreshToken) {
-        if (this.refreshToken == null) {
-            this.refreshToken = new RefreshTokenEntity(reissuedRefreshToken, this);
-        } else {
-            this.refreshToken.setToken(reissuedRefreshToken);
-        }
     }
 }

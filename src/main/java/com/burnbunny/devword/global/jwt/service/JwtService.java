@@ -5,11 +5,14 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.burnbunny.devword.domain.user.User;
 import com.burnbunny.devword.domain.user.repository.UserRepository;
+import com.burnbunny.devword.global.jwt.refreshtoken.RefreshTokenEntity;
+import com.burnbunny.devword.global.jwt.refreshtoken.repository.RefreshTokenRedisRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +46,7 @@ public class JwtService {
     private static final String BEARER = "Bearer ";
 
     private final UserRepository userRepository;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
 
     public String createAccessToken(String email) {
@@ -92,7 +96,7 @@ public class JwtService {
                 .map(accessToken -> accessToken.replace(BEARER, ""));
     }
 
-    public Optional<String> extractEmailFromToken(String accessToken) {
+    public Optional<String> extractEmailFromAccessToken(String accessToken) {
         try {
             log.info("extractEmail 호출");
             DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(secretkey)).build().verify(accessToken);
@@ -104,15 +108,25 @@ public class JwtService {
     }
 
     public void updateRefreshToken(String email, String refreshToken) {
-        User user = userRepository.findByEmail(email).orElse(null);
-
-        if (user == null) {
+        if (!userRepository.existsByEmail(email)) {
             new Exception("해당 이메일과 일치하는 회원이 없습니다.");
             return;
         }
+        RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
+                .email(email)
+                .refreshToken(refreshToken)
+                .build();
+        refreshTokenRedisRepository.save(refreshTokenEntity);
+    }
 
-        user.updateRefreshToken(refreshToken);
-        userRepository.saveAndFlush(user);
+    public Optional<User> findUserByRefreshToken(String refreshToken) throws ServiceException {
+        RefreshTokenEntity refreshTokenEntity =
+                refreshTokenRedisRepository.findByRefreshToken(refreshToken)
+                        .orElseThrow(() -> new ServiceException("일치하는 refresh token이 없습니다."));
+
+        String email = refreshTokenEntity.getEmail();
+
+        return userRepository.findByEmail(email);
     }
 
     public boolean isTokenValid(String token) {
