@@ -3,14 +3,19 @@ package com.burnbunny.devword.domain.user.controller;
 import com.burnbunny.devword.domain.user.dto.UserResponseDto;
 import com.burnbunny.devword.domain.user.dto.UserSignUpDto;
 import com.burnbunny.devword.domain.user.service.UserService;
+import com.burnbunny.devword.global.jwt.service.JwtService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final JwtService jwtService;
 
     @PostMapping("/sign-up")
     public UserResponseDto signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
@@ -29,7 +34,11 @@ public class UserController {
     }
 
     @GetMapping("/token-test")
-    public String jwtTest() {
-        return "jwtTest 요청 성공";
+    public UserResponseDto jwtTest(HttpServletRequest request) {
+        String token = jwtService.extractAccessTokenFromRequest(request).orElse(null);
+        Optional<String> email = jwtService.extractEmailFromAccessToken(token);
+        String resMessage = email.isPresent() ? "토큰으로 이메일 조회 완료" : "이메일 조회 실패";
+
+        return new UserResponseDto(200, resMessage, email.orElse(null));
     }
 }
