@@ -1,14 +1,12 @@
-package com.burnbunny.devword.domain.user.dto;
+package com.burnbunny.devword.domain.user.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 
 @Data
 @AllArgsConstructor
-public class UserResponseDto {
+public class UserResponse {
     private int statusCode;
     private String resMessage;
     private Object data;

@@ -1,6 +1,6 @@
 package com.burnbunny.devword.global.signin.handler;
 
-import com.burnbunny.devword.domain.user.dto.UserResponseDto;
+import com.burnbunny.devword.domain.user.dto.response.UserResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +19,7 @@ public class SigninFailureHandler extends SimpleUrlAuthenticationFailureHandler 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
-        String jsonResult = objectMapper.writeValueAsString(new UserResponseDto(200, "로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.", null));
+        String jsonResult = objectMapper.writeValueAsString(new UserResponse(200, "로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.", null));
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
         response.getWriter().write(jsonResult);

@@ -1,6 +1,6 @@
 package com.burnbunny.devword.global.signin.handler;
 
-import com.burnbunny.devword.domain.user.dto.UserResponseDto;
+import com.burnbunny.devword.domain.user.dto.response.UserResponse;
 import com.burnbunny.devword.global.jwt.service.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -34,7 +34,7 @@ public class SigninSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info("로그인 데이터: ");
         log.info("email: {}", email);
 
-        String jsonResult = objectMapper.writeValueAsString(new UserResponseDto(200, "로그인 완료", accessToken));
+        String jsonResult = objectMapper.writeValueAsString(new UserResponse(200, "로그인 완료", accessToken));
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
         response.getWriter().write(jsonResult);
