@@ -1,6 +1,8 @@
 package com.burnbunny.devword.global.signin.handler;
 
+import com.burnbunny.devword.domain.user.dto.UserResponseDto;
 import com.burnbunny.devword.global.jwt.service.JwtService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,26 +21,32 @@ import java.io.IOException;
 public class SigninSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtService jwtService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
 
         String email = extractUserEmail(authentication);
-        issueAndSendTokens(response, email);
+        String accessToken = issueAndSendTokens(response, email);
 
         log.info("로그인 성공.");
         log.info("로그인 데이터: ");
         log.info("email: {}", email);
 
-        // TODO: 2023/05/13 응답 수정하기
+        String jsonResult = objectMapper.writeValueAsString(new UserResponseDto(200, "로그인 완료", accessToken));
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf-8");
+        response.getWriter().write(jsonResult);
     }
 
-    private void issueAndSendTokens(HttpServletResponse response, String email) {
+    private String issueAndSendTokens(HttpServletResponse response, String email) {
         String accessToken = jwtService.createAccessToken(email);
         String refreshToken = jwtService.createRefreshToken();
         jwtService.updateRefreshToken(email, refreshToken);
         jwtService.sendAccessAndRefreshTokenInResponse(response, accessToken, refreshToken);
+        return accessToken;
+
     }
 
     private String extractUserEmail(Authentication authentication) {
