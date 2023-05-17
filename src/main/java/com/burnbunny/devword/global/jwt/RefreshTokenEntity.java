@@ -16,4 +16,5 @@ public class RefreshTokenEntity {
 
     @Indexed
     private String email;
+
 }
