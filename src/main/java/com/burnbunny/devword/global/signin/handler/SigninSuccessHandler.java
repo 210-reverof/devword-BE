@@ -34,7 +34,8 @@ public class SigninSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info("로그인 데이터: ");
         log.info("email: {}", email);
 
-        String jsonResult = objectMapper.writeValueAsString(new UserResponse(200, "로그인 완료", accessToken));
+        String jsonResult = objectMapper.writeValueAsString(new UserResponse("로그인 완료", accessToken));
+        response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
         response.getWriter().write(jsonResult);
