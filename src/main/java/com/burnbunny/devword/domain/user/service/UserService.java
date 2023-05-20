@@ -2,7 +2,7 @@ package com.burnbunny.devword.domain.user.service;
 
 import com.burnbunny.devword.domain.user.Role;
 import com.burnbunny.devword.domain.user.User;
-import com.burnbunny.devword.domain.user.dto.UserSignUpDto;
+import com.burnbunny.devword.domain.user.dto.request.UserSignUpDto;
 import com.burnbunny.devword.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
