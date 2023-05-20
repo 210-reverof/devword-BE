@@ -54,7 +54,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
             return;
         }
 
-        User user = jwtService.findUserByRefreshToken(refreshToken).orElseThrow(() -> new ServiceException("잘못된 refresh token입니다."));
+        User user = jwtService.findUserByRefreshToken(refreshToken);
         String email = user.getEmail();
 
         String reissuedRefreshToken = reissueRefreshToken(email);

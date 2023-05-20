@@ -12,8 +12,9 @@ import org.springframework.data.redis.core.index.Indexed;
 @Builder
 public class RefreshTokenEntity {
     @Id
-    private String email;
+    private String refreshToken;
 
     @Indexed
-    private String refreshToken;
+    private String email;
+
 }

@@ -119,14 +119,14 @@ public class JwtService {
         refreshTokenRedisRepository.save(refreshTokenEntity);
     }
 
-    public Optional<User> findUserByRefreshToken(String refreshToken) throws ServiceException {
+    public User findUserByRefreshToken(String refreshToken) throws ServiceException {
         RefreshTokenEntity refreshTokenEntity =
-                refreshTokenRedisRepository.findByRefreshToken(refreshToken)
+                refreshTokenRedisRepository.findById(refreshToken)
                         .orElseThrow(() -> new ServiceException("일치하는 refresh token이 없습니다."));
 
         String email = refreshTokenEntity.getEmail();
 
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email).orElseThrow(() -> new ServiceException("이메일과 일치하는 유저가 없습니다."));
     }
 
     public boolean isTokenValid(String token) {
