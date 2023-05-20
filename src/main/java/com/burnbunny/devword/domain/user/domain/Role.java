@@ -1,4 +1,4 @@
-package com.burnbunny.devword.domain.user;
+package com.burnbunny.devword.domain.user.domain;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

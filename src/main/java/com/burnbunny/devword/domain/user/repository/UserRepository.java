@@ -1,6 +1,6 @@
 package com.burnbunny.devword.domain.user.repository;
 
-import com.burnbunny.devword.domain.user.User;
+import com.burnbunny.devword.domain.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
