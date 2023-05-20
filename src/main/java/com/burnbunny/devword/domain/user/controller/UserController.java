@@ -19,9 +19,9 @@ public class UserController {
     private final JwtService jwtService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<UserResponse> signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
+    public ResponseEntity<UserResponse> signUp(@RequestBody UserSignUpDto userSignUpDto) {
         Long userId = userService.signUp(userSignUpDto);
-        String resMessage = (userId!=null) ? "회원 가입 완료" : "에러 메시지";
+        String resMessage = "회원 가입 완료";
 
         return ResponseEntity.ok(new UserResponse(resMessage, userId));
     }
@@ -29,7 +29,7 @@ public class UserController {
     @GetMapping("/check/{email}")
     public ResponseEntity<UserResponse> checkEmail(@PathVariable String email) {
         boolean emailAvailable = userService.isEmailAvailable(email);
-        String resMessage = emailAvailable ? "사용 가능한 이메일" : "사용 불가능한 이메일";
+        String resMessage = "사용 가능한 이메일";
 
         return ResponseEntity.ok(new UserResponse(resMessage, emailAvailable));
     }
