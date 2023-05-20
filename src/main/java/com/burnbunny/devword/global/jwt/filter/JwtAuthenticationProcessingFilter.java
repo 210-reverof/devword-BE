@@ -1,6 +1,6 @@
 package com.burnbunny.devword.global.jwt.filter;
 
-import com.burnbunny.devword.domain.user.User;
+import com.burnbunny.devword.domain.user.domain.User;
 import com.burnbunny.devword.domain.user.repository.UserRepository;
 import com.burnbunny.devword.global.jwt.service.JwtService;
 import jakarta.servlet.FilterChain;
@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.service.spi.ServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
