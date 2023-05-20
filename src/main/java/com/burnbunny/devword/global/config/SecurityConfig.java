@@ -2,6 +2,7 @@ package com.burnbunny.devword.global.config;
 
 import com.burnbunny.devword.domain.user.repository.UserRepository;
 import com.burnbunny.devword.global.jwt.filter.JwtAuthenticationProcessingFilter;
+import com.burnbunny.devword.global.jwt.filter.JwtExceptionFilter;
 import com.burnbunny.devword.global.jwt.service.JwtService;
 import com.burnbunny.devword.global.signin.filter.JsonUsernamePasswordAuthenticationFilter;
 import com.burnbunny.devword.global.signin.handler.SigninFailureHandler;
@@ -54,10 +55,16 @@ public class SecurityConfig {
                 .requestMatchers("/user/sign-up", "user/check/**").permitAll()
                 .anyRequest().authenticated();
 
-        http.addFilterAfter(jwtAuthenticationProcessingFilter(), LogoutFilter.class);
+        http.addFilterAfter(jwtExceptionFilter(), LogoutFilter.class);
+        http.addFilterAfter(jwtAuthenticationProcessingFilter(), JwtExceptionFilter.class);
         http.addFilterAfter(jsonUsernamePasswordAuthenticationFilter(), JwtAuthenticationProcessingFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    JwtExceptionFilter jwtExceptionFilter() {
+        return new JwtExceptionFilter(objectMapper);
     }
 
     @Bean
