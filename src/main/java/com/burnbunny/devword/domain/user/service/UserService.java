@@ -17,7 +17,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public Long signUp(UserSignUpDto userSignUpDto) throws InvalidUserException {
+    public String signUp(UserSignUpDto userSignUpDto) throws InvalidUserException {
         if (userRepository.existsByEmail(userSignUpDto.getEmail())) {
             throw new InvalidUserException("이미 존재하는 이메일입니다.");
         }
@@ -40,14 +40,14 @@ public class UserService {
         newUser.passwordEncode(passwordEncoder);
         User savedUser = userRepository.save(newUser);
 
-        return savedUser.getId();
+        return savedUser.getEmail();
     }
 
     public boolean isEmailAvailable(String email) {
         if (userRepository.existsByEmail(email)) {
-            return true;
+            throw new InvalidUserException("사용 불가능한 이메일입니다.");
         }
 
-        throw new InvalidUserException("사용 불가능한 이메일입니다.");
+        return true;
     }
 }

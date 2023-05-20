@@ -20,10 +20,10 @@ public class UserController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<UserResponse> signUp(@RequestBody UserSignUpDto userSignUpDto) {
-        Long userId = userService.signUp(userSignUpDto);
+        String userEmail = userService.signUp(userSignUpDto);
         String resMessage = "회원 가입 완료";
 
-        return ResponseEntity.ok(new UserResponse(resMessage, userId));
+        return ResponseEntity.ok(new UserResponse(resMessage, userEmail));
     }
 
     @GetMapping("/check/{email}")
