@@ -2,10 +2,15 @@ package com.burnbunny.devword.global.jwt.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.burnbunny.devword.domain.user.User;
+import com.burnbunny.devword.domain.user.domain.User;
+import com.burnbunny.devword.domain.user.exception.InvalidUserException;
 import com.burnbunny.devword.domain.user.repository.UserRepository;
 import com.burnbunny.devword.global.jwt.RefreshTokenEntity;
+import com.burnbunny.devword.global.jwt.exception.ExpiredTokenException;
+import com.burnbunny.devword.global.jwt.exception.InvalidTokenException;
 import com.burnbunny.devword.global.jwt.repository.RefreshTokenRedisRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -101,16 +106,16 @@ public class JwtService {
             log.info("extractEmail 호출");
             DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(secretkey)).build().verify(accessToken);
             return Optional.ofNullable(decodedJWT.getClaim(EMAIL_CLAIM).asString());
-        } catch (Exception e) {
-            log.error("엑세스 토큰이 유효하지 않습니다.");
-            return Optional.empty();
+        } catch (TokenExpiredException e) {
+            throw new ExpiredTokenException("엑세스 토큰이 만료되었습니다.");
+        } catch (JWTVerificationException e) {
+            throw new InvalidTokenException("엑세스 토큰이 유효하지 않습니다.");
         }
     }
 
     public void updateRefreshToken(String email, String refreshToken) {
         if (!userRepository.existsByEmail(email)) {
-            new Exception("해당 이메일과 일치하는 회원이 없습니다.");
-            return;
+            throw new InvalidUserException("해당 이메일과 일치하는 회원이 없습니다.");
         }
         RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
                 .email(email)
@@ -119,14 +124,15 @@ public class JwtService {
         refreshTokenRedisRepository.save(refreshTokenEntity);
     }
 
-    public Optional<User> findUserByRefreshToken(String refreshToken) throws ServiceException {
+    public User findUserByRefreshToken(String refreshToken) {
         RefreshTokenEntity refreshTokenEntity =
-                refreshTokenRedisRepository.findByRefreshToken(refreshToken)
-                        .orElseThrow(() -> new ServiceException("일치하는 refresh token이 없습니다."));
+                refreshTokenRedisRepository.findById(refreshToken)
+                        .orElseThrow(() -> new InvalidTokenException("일치하는 refresh token이 없습니다."));
 
         String email = refreshTokenEntity.getEmail();
 
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new InvalidUserException("이메일과 일치하는 유저가 없습니다."));
     }
 
     public boolean isTokenValid(String token) {
@@ -134,9 +140,10 @@ public class JwtService {
             JWT.require(Algorithm.HMAC512(secretkey)).build().verify(token);
             log.info("유효한 토큰입니다.");
             return true;
-        } catch (Exception e) {
-            log.error("유효하지 않은 토큰입니다. {}", e.getMessage());
-            return false;
+        } catch (TokenExpiredException e) {
+            throw new ExpiredTokenException("만료된 토큰입니다. 갱신이 필요합니다.");
+        } catch (JWTVerificationException e) {
+            throw new InvalidTokenException("유효하지 않은 토큰입니다.");
         }
     }
 }

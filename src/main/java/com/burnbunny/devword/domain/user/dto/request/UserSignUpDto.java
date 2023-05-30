@@ -1,4 +1,4 @@
-package com.burnbunny.devword.domain.user.dto;
+package com.burnbunny.devword.domain.user.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
