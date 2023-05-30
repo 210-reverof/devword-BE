@@ -20,7 +20,7 @@ public class SigninFailureHandler extends SimpleUrlAuthenticationFailureHandler 
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
         String jsonResult = objectMapper.writeValueAsString(new UserResponse("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.", null));
-        response.setStatus(HttpServletResponse.SC_OK);
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
         response.getWriter().write(jsonResult);
