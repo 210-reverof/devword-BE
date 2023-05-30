@@ -1,8 +1,7 @@
 package com.burnbunny.devword.global.jwt.filter;
 
-import com.burnbunny.devword.domain.user.domain.User;
+import com.burnbunny.devword.domain.user.User;
 import com.burnbunny.devword.domain.user.repository.UserRepository;
-import com.burnbunny.devword.global.jwt.exception.ExpiredTokenException;
 import com.burnbunny.devword.global.jwt.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
@@ -46,9 +46,15 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     }
 
     public void checkRefreshAndReissueTokens(HttpServletResponse response, String refreshToken) {
-        jwtService.isTokenValid(refreshToken);
+        boolean tokenValid = jwtService.isTokenValid(refreshToken);
 
-        User user = jwtService.findUserByRefreshToken(refreshToken);
+        if (!tokenValid){
+            // TODO: 2023/05/15 refresh token 만료. 재로그인 요청 추가.
+            log.info("refresh token 만료. 재로그인 필요.");
+            return;
+        }
+
+        User user = jwtService.findUserByRefreshToken(refreshToken).orElseThrow(() -> new ServiceException("잘못된 refresh token입니다."));
         String email = user.getEmail();
 
         String reissuedRefreshToken = reissueRefreshToken(email);

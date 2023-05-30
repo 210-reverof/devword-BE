@@ -1,12 +1,13 @@
 package com.burnbunny.devword.global.signin.service;
 
-import com.burnbunny.devword.domain.user.domain.User;
+import com.burnbunny.devword.domain.user.User;
 import com.burnbunny.devword.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Service
 @RequiredArgsConstructor

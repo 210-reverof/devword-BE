@@ -1,12 +1,11 @@
 package com.burnbunny.devword.domain.user.controller;
 
-import com.burnbunny.devword.domain.user.dto.response.UserResponse;
-import com.burnbunny.devword.domain.user.dto.request.UserSignUpDto;
+import com.burnbunny.devword.domain.user.dto.UserResponseDto;
+import com.burnbunny.devword.domain.user.dto.UserSignUpDto;
 import com.burnbunny.devword.domain.user.service.UserService;
 import com.burnbunny.devword.global.jwt.service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -19,27 +18,27 @@ public class UserController {
     private final JwtService jwtService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<UserResponse> signUp(@RequestBody UserSignUpDto userSignUpDto) {
-        String userEmail = userService.signUp(userSignUpDto);
-        String resMessage = "회원 가입 완료";
+    public UserResponseDto signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
+        Long userId = userService.signUp(userSignUpDto);
+        String resMessage = (userId!=null) ? "회원 가입 완료" : "에러 메시지";
 
-        return ResponseEntity.ok(new UserResponse(resMessage, userEmail));
+        return new UserResponseDto(200, resMessage, userId);
     }
 
     @GetMapping("/check/{email}")
-    public ResponseEntity<UserResponse> checkEmail(@PathVariable String email) {
+    public UserResponseDto checkEmail(@PathVariable String email) {
         boolean emailAvailable = userService.isEmailAvailable(email);
-        String resMessage = "사용 가능한 이메일";
+        String resMessage = emailAvailable ? "사용 가능한 이메일" : "사용 불가능한 이메일";
 
-        return ResponseEntity.ok(new UserResponse(resMessage, emailAvailable));
+        return new UserResponseDto(200, resMessage, emailAvailable);
     }
 
     @GetMapping("/token-test")
-    public ResponseEntity<UserResponse> jwtTest(HttpServletRequest request) {
+    public UserResponseDto jwtTest(HttpServletRequest request) {
         String token = jwtService.extractAccessTokenFromRequest(request).orElse(null);
         Optional<String> email = jwtService.extractEmailFromAccessToken(token);
         String resMessage = email.isPresent() ? "토큰으로 이메일 조회 완료" : "이메일 조회 실패";
 
-        return ResponseEntity.ok(new UserResponse(resMessage, email.orElse(null)));
+        return new UserResponseDto(200, resMessage, email.orElse(null));
     }
 }

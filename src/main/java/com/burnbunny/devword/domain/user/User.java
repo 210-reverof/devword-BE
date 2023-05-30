@@ -1,4 +1,4 @@
-package com.burnbunny.devword.domain.user.domain;
+package com.burnbunny.devword.domain.user;
 
 import jakarta.persistence.*;
 import lombok.*;
